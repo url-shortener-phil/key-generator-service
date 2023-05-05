@@ -10,8 +10,8 @@ import java.util.Base64;
 
 @Service
 public class KeyGeneratorService {
-    private static final String HASHING_ALGORITHM = "MD5";
     public static final int DEFAULT_KEY_LENGTH = 7;
+    private static final String HASHING_ALGORITHM = "MD5";
 
     public String generateKey(final String fullUrl) throws NoSuchAlgorithmException {
         return this.generateKey(fullUrl, DEFAULT_KEY_LENGTH);
@@ -25,14 +25,17 @@ public class KeyGeneratorService {
     }
 
     private byte[] generateHash(final String fullUrl) throws NoSuchAlgorithmException {
+        final int hashLength = 32;
+
         final MessageDigest messageDigest = MessageDigest.getInstance(HASHING_ALGORITHM);
         messageDigest.update(fullUrl.getBytes(StandardCharsets.UTF_8));
 
         final byte[] digest = messageDigest.digest();
         final BigInteger bigInteger = new BigInteger(1, digest);
-
         String hashText = bigInteger.toString(16);
-        hashText = "0".repeat(32 - hashText.length()) + hashText;
+
+        // Pad to required hash length
+        hashText = "0".repeat(hashLength - hashText.length()) + hashText;
 
         return hashText.getBytes();
     }
